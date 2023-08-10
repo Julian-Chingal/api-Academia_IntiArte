@@ -1,6 +1,6 @@
-const routercourse = require("express").Router();
-const { controllCourse } = require("../controllers");
+const router = require("express").Router()
+const { controllCourse } = require("../controllers")
 
-routercourse.get("/", controllCourse.getcourse);
+router.get("/", controllCourse.getcourse);
 
-module.exports = routercourse;
+module.exports = router

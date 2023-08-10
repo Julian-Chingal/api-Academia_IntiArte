@@ -12,7 +12,7 @@ function getInventory(req, res) {
     } else {
       res.status(500).json({ msg: "Error!" });
     }
-  });
+  })
 }
 
 function getIdIventory(req, res) {
