@@ -1,5 +1,5 @@
 const DBconnection = require("../database");
-
+const path = require('path')
 // cosult items
 function getInventory(req, res) {
   const query = `SELECT INVENTORY.ITEM, INVENTORY.CANT
