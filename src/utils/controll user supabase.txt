@@ -1,0 +1,21 @@
+const DbSupa = require('../database')
+
+// get
+ const getUser = async (req,res) =>{
+
+    const {data,error} = await DbSupa.from('person').select()
+
+    if(!error){
+        res.json(data)
+        console.log(data)
+    }else{
+        res.status(500).json('!Error')
+    }
+}
+
+const createUser = async (req,res)=> {
+    const {data, error} = DbSupa.from('person').insert({})
+}
+ module.exports = {
+    getUser
+ }

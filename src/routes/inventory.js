@@ -1,20 +1,17 @@
-const router = require("express").Router()
-const { controllInventory } = require("../controllers")
+const router = require("express").Router();
+const { controllInventory } = require("../controllers");
 
 // get
-router.get("/items", controllInventory.getInventory)
-router.get("/items/:id", controllInventory.getIdIventory)
+router.get("/item", controllInventory.getInventory);
+router.get("/item/:id", controllInventory.getIdIventory);
 
 // post
-router.post("/register/item", controllInventory.postInventory)
+router.post("/item", controllInventory.createInventory);
 
 // put
-router.put("/update/item/add/:id", controllInventory.putAddInventory)
-router.put("/update/item/del/:id", controllInventory.putDelInventory)
-
-// patch 
-router.patch("/update/item/add/:id", controllInventory.putAddInventory) //solo si se requiere actualizar algunos valores
+router.put("/item/:id", controllInventory.updateInventory);
 
 // delete
+router.delete("/item/:id");
 
-module.exports = router
+module.exports = router;

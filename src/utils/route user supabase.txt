@@ -1,0 +1,7 @@
+const router = require('express').Router()
+const {controllUser} = require('../controllers/index')
+
+router.get('/' , controllUser.getUser)
+router.post('/' ,)
+
+module.exports = router
