@@ -13,6 +13,7 @@ const getInventory = (req, res) => {
   });
 };
 
+// consult item id
 const getIdIventory = (req, res) => {
   const { id } = req.params;
 

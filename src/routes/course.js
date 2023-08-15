@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const { controllCourse } = require("../controllers");
 
+
 router.get("/", controllCourse.getCourse);
 
 router.get("/:id", controllCourse.getIdCourse);
