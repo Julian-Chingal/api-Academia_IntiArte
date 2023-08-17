@@ -33,9 +33,9 @@ INNER JOIN COURSE
 ON DOCENT.IDDOCENT = COURSE.FK_IDDOCENT 
 ORDER BY DOCENT.IDDOCENT ASC;
 
---------------
+-------------------------------------------------------------------------
 -- INVENTARIO 
----------------
+----------------------------------------------------------------------
 -- GET
     -- TODO EL INVENTARIO
 SELECT INVENTORY.ITEM, INVENTORY.CANT
@@ -51,20 +51,24 @@ WHERE INVENTORY.IDINVENTORY = ?;
 SELECT CANT FROM INVENTORY WHERE IDINVENTORY = ?;
 
 UPDATE INVENTORY
-SET CANT = ?
+SET CANT = IFNULL(?, CANT)
 WHERE INVENTORY.IDINVENTORY = ?;
 
 -- manejo de valores nulos al actualiza run registro
 UPDATE INVENTORY
-SET CANT = IFNULL(?, CANT)
+SET ?
 WHERE INVENTORY.IDINVENTORY = ?;
 
 
--- create
+-- CREATE 
 
 INSERT INTO INVENTORY (ITEM, CANT, FK_IDCOMPANY) VALUES(
     ?,?,1
 );
+
+-- DELETE
+
+DELETE FROM INVENTORY WHERE IDINVENTORY = ?;
 
 ------------
 -- COURSE
@@ -90,10 +94,8 @@ WHERE COURSE.IDCOURSE = ?;
 
 --  update
 UPDATE COURSE 
-SET FK_IDDOCENT = IFNULL(?, FK_IDDOCENT),
-NAME_COURSE = IFNULL(?,NAME_COURSE),
-DESCRIPTION_CO = IFNULL(?,DESCRIPTION_CO)
-WHERE COURSE.IDCOURSE = ?;
+SET ?
+WHERE IDCOURSE = ?;
 
 -- create
 

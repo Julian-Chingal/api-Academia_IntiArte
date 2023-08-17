@@ -2,7 +2,7 @@ const DBconnection = require("../databaseMysql");
 
 // cosult items
 const getInventory = (req, res) => {
-  const query = `SELECT INVENTORY.ITEM, INVENTORY.CANT FROM INVENTORY  ORDER BY INVENTORY.IDINVENTORY ASC;`;
+  const query = `SELECT INVENTORY.IDINVENTORY AS ID, INVENTORY.ITEM, INVENTORY.CANT FROM INVENTORY  ORDER BY INVENTORY.IDINVENTORY ASC;`;
 
    DBconnection.query(query, (err, rows) => {
     if (!err) {
@@ -17,7 +17,7 @@ const getInventory = (req, res) => {
 const getIdIventory = (req, res) => {
   const { id } = req.params;
 
-  const query = `SELECT INVENTORY.ITEM, INVENTORY.CANT FROM INVENTORY WHERE INVENTORY.IDINVENTORY = ${id};`;
+  const query = `SELECT INVENTORY.IDINVENTORY AS ID,INVENTORY.ITEM, INVENTORY.CANT FROM INVENTORY WHERE INVENTORY.IDINVENTORY = ${id};`;
 
   DBconnection.query(query, (err, rows) => {
     if (!err) {
@@ -33,28 +33,27 @@ const getIdIventory = (req, res) => {
 };
 
 // modify items add
-const updateInventory = (req, res) => {
+const updateInventory = (req, res, next) => {
   const { id } = req.params;
-  const { cantAdd } = req.body;
+  const { name, cant } = req.body;
 
+  
   // consult existing quantity
-  const queryinventory = `SELECT CANT FROM INVENTORY WHERE IDINVENTORY = ?;`;
+  const queryinventory = `SELECT CANT, ITEM FROM INVENTORY WHERE IDINVENTORY = ?;`;
 
   DBconnection.query(queryinventory, id, (err, rows, fields) => {
     if (!err) {
       if (rows.length === 0) {
         return res.status(404).json({ msg: "Not Foud 😕" });
       } else {
-        const cantOld = rows[0].CANT;
-
         // add new cant
-        const newcant = cantOld + cantAdd;
+        const newcant = rows[0].CANT + cant;
 
-        const query = `UPDATE INVENTORY SET CANT = ?  WHERE INVENTORY.IDINVENTORY = ?;`;
+        const query = `UPDATE INVENTORY SET CANT = ?, ITEM = ? WHERE IDINVENTORY = ?;`;
 
-        DBconnection.query(query, [newcant, id], (err, rows) => {
+        DBconnection.query(query, [newcant,name,id], (err, rows) => {
           if (!err) {
-            res.json(rows);
+            res.json({ msg: "item updated successfully 🎆 🎇" });
           } else {
             res.status(500).json({ msg: "!Error" });
           }
@@ -82,7 +81,17 @@ const createInventory = (req, res) => {
 };
 
 const deleteInventory = (req,res)=>{
-  res.send('Eliminado')
+  const {id} = req.params
+
+  const query = "DELETE FROM INVENTORY WHERE IDINVENTORY = ?"
+
+  DBconnection.query(query, id, (err,rows,fields)=>{
+    if (!err) {
+      if (rows.length !== 0) {
+        res.json({msg: "item successfully removed ☠️ 💯 "})
+      }
+    }
+  })
 }
 
 module.exports = {

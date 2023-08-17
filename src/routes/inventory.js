@@ -12,6 +12,6 @@ router.post("/item", controllInventory.createInventory);
 router.put("/item/:id", controllInventory.updateInventory);
 
 // delete
-router.delete("/item/:id");
+router.delete("/item/:id", controllInventory.deleteInventory);
 
 module.exports = router;

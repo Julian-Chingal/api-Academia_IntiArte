@@ -1,6 +1,0 @@
-const {createClient} = require('@supabase/supabase-js')
-const {DB_URL_SUPABASE, DB_KEY_SUPABASE} = require('./config')
-
-const DbSupa = createClient(DB_URL_SUPABASE, DB_KEY_SUPABASE)
-
-module.exports = DbSupa

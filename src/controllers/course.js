@@ -46,10 +46,11 @@ const createCourse = (req, res) => {
 
 const updateCourse = (req, res) => {
   const { id } = req.params;
+  const body = req.body
 
   const query = "UPDATE COURSE  SET ? WHERE IDCOURSE =  ?;";
 
-  DBconnection.query(query,[req.body,id],(err, rows, fields) => {
+  DBconnection.query(query,[body,id],(err, rows, fields) => {
       if (!err) {
         if (rows.affectedRows === 0) {
           res.status(404).json({ msg: "Not Foud 😕" });

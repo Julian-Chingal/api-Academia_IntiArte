@@ -1,0 +1,1 @@
+// crear trigger que si inventario llega a 0 no permita la transaccion
