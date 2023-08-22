@@ -1,0 +1,160 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model ATTENDANCE {
+  idattendance     Int         @id @default(autoincrement())
+  fk_idinscription Int
+  fecha            DateTime    @db.Date
+  attendance       String      @db.VarChar(10)
+  INSCRIPTION      INSCRIPTION @relation(fields: [fk_idinscription], references: [idinscription], onDelete: NoAction, onUpdate: NoAction, map: "ATTENDANCE_ibfk_1")
+
+  @@index([fk_idinscription], map: "fk_idinscription")
+}
+
+model COMPANY {
+  idcompany       Int         @id @default(autoincrement())
+  name_company    String?     @db.VarChar(100)
+  address_company String?     @db.VarChar(100)
+  tel_company     String?     @db.VarChar(20)
+  INVENTORY       INVENTORY[]
+}
+model DOCENT {
+  iddocent     Int      @default(autoincrement()) @unique
+  fk_idperson  Int
+  state_docent String   @db.VarChar(10)
+  speciality   String?  @db.VarChar(50)
+  COURSE       COURSE[]
+  PERSON       PERSON   @relation(fields: [fk_idperson], references: [idperson], onDelete: NoAction, onUpdate: NoAction, map: "DOCENT_ibfk_1")
+
+  @@id([iddocent, fk_idperson])
+  @@index([fk_idperson], map: "fk_idperson")
+}
+
+model COURSE {
+  idcourse       Int           @id @default(autoincrement())
+  fk_iddocent    Int
+  name_course    String        @db.VarChar(100)
+  description_co String?       @db.VarChar(1000)
+  DOCENT         DOCENT        @relation(fields: [fk_iddocent], references: [iddocent], onDelete: NoAction, onUpdate: NoAction, map: "COURSE_ibfk_1")
+  INSCRIPTION    INSCRIPTION[]
+
+  @@index([fk_iddocent], map: "fk_iddocent")
+}
+
+
+model EMPLOYEE {
+  idemployee     Int      @default(autoincrement())
+  fk_idperson    Int
+  fk_idposition  Int
+  state_employee String   @db.VarChar(10)
+  salary         Decimal  @db.Decimal(10, 0)
+  schedule       String   @db.VarChar(100)
+  PERSON         PERSON   @relation(fields: [fk_idperson], references: [idperson], onDelete: NoAction, onUpdate: NoAction, map: "EMPLOYEE_ibfk_1")
+  POSITION       POSITION @relation(fields: [fk_idposition], references: [idposition], onDelete: NoAction, onUpdate: NoAction, map: "EMPLOYEE_ibfk_2")
+
+  @@id([idemployee, fk_idperson])
+  @@index([fk_idperson], map: "fk_idperson")
+  @@index([fk_idposition], map: "fk_idposition")
+}
+
+model INSCRIPTION {
+  idinscription Int          @id @default(autoincrement())
+  fk_idstudent  Int
+  fk_idcourse   Int
+  state         String       @db.VarChar(10)
+  ATTENDANCE    ATTENDANCE[]
+  STUDENT       STUDENT      @relation(fields: [fk_idstudent], references: [idstudent], onDelete: NoAction, onUpdate: NoAction, map: "INSCRIPTION_ibfk_1")
+  COURSE        COURSE       @relation(fields: [fk_idcourse], references: [idcourse], onDelete: NoAction, onUpdate: NoAction, map: "INSCRIPTION_ibfk_2")
+
+  @@index([fk_idcourse], map: "fk_idcourse")
+  @@index([fk_idstudent], map: "fk_idstudent")
+}
+
+model INVENTORY {
+  idinventory  Int     @id @default(autoincrement())
+  item         String  @db.VarChar(100)
+  cant         Int
+  fk_idcompany Int
+  COMPANY      COMPANY @relation(fields: [fk_idcompany], references: [idcompany], onDelete: NoAction, onUpdate: NoAction, map: "INVENTORY_ibfk_1")
+
+  @@index([fk_idcompany], map: "fk_idcompany")
+}
+
+model PERSON {
+  idperson          Int          @id
+  name_person       String       @db.VarChar(50)
+  lastname          String       @db.VarChar(50)
+  age               Int
+  tel               String       @db.VarChar(13)
+  email             String?      @db.VarChar(100)
+  fk_idtypedocument Int
+  DOCENT            DOCENT[]
+  EMPLOYEE          EMPLOYEE[]
+  TYPEDOCUMENT      TYPEDOCUMENT @relation(fields: [fk_idtypedocument], references: [idtypedocument], onDelete: NoAction, onUpdate: NoAction, map: "PERSON_ibfk_1")
+  STUDENT           STUDENT[]
+  USER              USER[]
+
+  @@index([fk_idtypedocument], map: "fk_idtypedocument")
+}
+
+model POSITION {
+  idposition    Int        @id @default(autoincrement())
+  name_position String     @db.VarChar(50)
+  EMPLOYEE      EMPLOYEE[]
+}
+
+model ROLE {
+  idrole    Int         @id @default(autoincrement())
+  name_role String      @db.VarChar(100)
+  USER_ROLE USER_ROLE[]
+}
+
+model STUDENT {
+  idstudent              Int           @default(autoincrement()) @unique
+  fk_idperson            Int
+  state_student          String        @db.VarChar(10)
+  admission_date         DateTime      @db.Date
+  emergency_contact_name String        @db.VarChar(50)
+  emergency_contact_tel  String        @db.VarChar(13)
+  INSCRIPTION            INSCRIPTION[]
+  PERSON                 PERSON        @relation(fields: [fk_idperson], references: [idperson], onDelete: NoAction, onUpdate: NoAction, map: "STUDENT_ibfk_1")
+
+  @@id([idstudent, fk_idperson])
+  @@index([fk_idperson], map: "fk_idperson")
+}
+
+model TYPEDOCUMENT {
+  idtypedocument Int      @id @default(autoincrement())
+  typedocument   String?  @db.VarChar(50)
+  PERSON         PERSON[]
+}
+
+model USER_ROLE {
+  iduser_role Int    @id @default(autoincrement())
+  fk_idrol    Int
+  fk_iduser   Int
+  state       String @db.VarChar(10)
+  ROLE        ROLE   @relation(fields: [fk_idrol], references: [idrole], onDelete: NoAction, onUpdate: NoAction, map: "USER_ROLE_ibfk_1")
+  USER        USER   @relation(fields: [fk_iduser], references: [iduser], onDelete: NoAction, onUpdate: NoAction, map: "USER_ROLE_ibfk_2")
+
+  @@index([fk_idrol], map: "fk_idrol")
+  @@index([fk_iduser], map: "fk_iduser")
+}
+
+model USER {
+  iduser        Int         @id @default(autoincrement())
+  fk_idperson   Int
+  username      String      @db.VarChar(100)
+  password_user String      @db.VarChar(100)
+  USER_ROLE     USER_ROLE[]
+  PERSON        PERSON      @relation(fields: [fk_idperson], references: [idperson], onDelete: NoAction, onUpdate: NoAction, map: "_USER_ibfk_1")
+
+  @@index([fk_idperson], map: "fk_idperson")
+  @@map("_USER")
+}

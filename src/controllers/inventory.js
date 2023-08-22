@@ -1,103 +1,111 @@
-const DBconnection = require("../databaseMysql");
+const prisma = require("../database");
 
 // cosult items
-const getInventory = (req, res) => {
-  const query = `SELECT INVENTORY.IDINVENTORY AS ID, INVENTORY.ITEM, INVENTORY.CANT FROM INVENTORY  ORDER BY INVENTORY.IDINVENTORY ASC;`;
+const getInventory = async (req, res) => {
+  try {
+    const items = await prisma.iNVENTORY.findMany();
 
-   DBconnection.query(query, (err, rows) => {
-    if (!err) {
-      res.json({"Inventory" : rows});
-    } else {
-      res.status(500).json({ msg: "Error!" });
-    }
-  });
+    res.json({ Inventory: items });
+  } catch (error) {
+    res.status(500).json({ msg: "Error!" });
+  }
 };
 
 // consult item id
-const getIdIventory = (req, res) => {
+const getIdIventory = async (req, res) => {
   const { id } = req.params;
+  try {
+    const item = await prisma.iNVENTORY.findFirst({
+      where: {
+        idinventory: parseInt(id),
+      },
+    });
 
-  const query = `SELECT INVENTORY.IDINVENTORY AS ID,INVENTORY.ITEM, INVENTORY.CANT FROM INVENTORY WHERE INVENTORY.IDINVENTORY = ${id};`;
-
-  DBconnection.query(query, (err, rows) => {
-    if (!err) {
-      if (rows.length === 0) {
-        res.status(404).json({ msg: "Not Foud 😕" });
-      } else {
-        res.json(rows);
-      }
+    if (item) {
+      res.json(item);
     } else {
-      res.status(500).json({ msg: "Error!" });
+      res.status(404).json({ msg: "Not Foud 😕" });
     }
-  });
+  } catch (error) {
+    res.status(500).json({ msg: "Error!" });
+  }
 };
 
 // modify items add
-const updateInventory = (req, res, next) => {
+const updateInventory = async (req, res, next) => {
   const { id } = req.params;
-  const { name, cant } = req.body;
+  const { cant, name } = req.body;
 
-  
-  // consult existing quantity
-  const queryinventory = `SELECT CANT, ITEM FROM INVENTORY WHERE IDINVENTORY = ?;`;
+  try {
+    const existingInventory = await prisma.iNVENTORY.findFirst({
+      where: { idinventory: parseInt(id) },
+    });
 
-  DBconnection.query(queryinventory, id, (err, rows, fields) => {
-    if (!err) {
-      if (rows.length === 0) {
-        return res.status(404).json({ msg: "Not Foud 😕" });
-      } else {
-        // add new cant
-        const newcant = rows[0].CANT + cant;
-
-        const query = `UPDATE INVENTORY SET CANT = ?, ITEM = ? WHERE IDINVENTORY = ?;`;
-
-        DBconnection.query(query, [newcant,name,id], (err, rows) => {
-          if (!err) {
-            res.json({ msg: "item updated successfully 🎆 🎇" });
-          } else {
-            res.status(500).json({ msg: "!Error" });
-          }
-        });
-      }
-    } else {
-      res.status(500).json("!Error");
+    // if not exist error
+    if (!existingInventory) {
+      res.status(404).json({ msg: "Not Foud 😕" });
     }
-  });
+
+    let cantUpdate = existingInventory.cant;
+
+    // if not null
+    if (cant !== null) {
+      if (typeof cant === "number") {
+        cantUpdate += cant;
+        if (cantUpdate <= 0) {
+          res.status(505).json({ msg: "invalid quantity 😕" });
+        }
+      }
+      const updateData = {
+        cant: cantUpdate,
+        item: name,
+      };
+      // update info
+      const update = await prisma.iNVENTORY.update({
+        where: {
+          idinventory: parseInt(id),
+        },
+        data: updateData,
+      });
+      res.json({ msg: "item updated successfully 🎆 🎇", update });
+    }
+  } catch (error) {
+    res.status(500).json("!Error");
+  }
 };
 
 // create new item
-const createInventory = (req, res) => {
+const createInventory = async (req, res) => {
   const { item, cant } = req.body;
-  const query =
-    "INSERT INTO INVENTORY (ITEM, CANT, FK_IDCOMPANY) VALUES(?,?,1);";
 
-  DBconnection.query(query, [item, cant], (err, rows, fields) => {
-    if (!err) {
-      res.json({ msg: "Item add successfully" });
-    } else {
-      res.status(500).json({ msg: "!Error" });
-    }
-  });
+  try {
+    const newItem = await prisma.iNVENTORY.create({
+      data: { item, cant, fk_idcompany: 1 },
+    });
+    res.json({ msg: "Item add successfully", newItem });
+  } catch (error) {
+    res.status(500).json({ msg: "!Error" });
+    console.log(error);
+  }
 };
 
-const deleteInventory = (req,res)=>{
-  const {id} = req.params
+const deleteInventory = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const deleteItem = await prisma.iNVENTORY.delete({
+      where: { idinventory: parseInt(id) },
+    });
 
-  const query = "DELETE FROM INVENTORY WHERE IDINVENTORY = ?"
-
-  DBconnection.query(query, id, (err,rows,fields)=>{
-    if (!err) {
-      if (rows.length !== 0) {
-        res.json({msg: "item successfully removed ☠️ 💯 "})
-      }
-    }
-  })
-}
+    res.json({ msg: "item successfully removed ☠️ 💯 ", deleteItem });
+  } catch (error) {
+    res.status(404).json({ msg: "Not Foud 😕" });
+  }
+};
 
 module.exports = {
   getInventory,
   getIdIventory,
   updateInventory,
   createInventory,
-  deleteInventory
+  deleteInventory,
 };

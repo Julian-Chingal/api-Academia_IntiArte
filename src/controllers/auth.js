@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const {hash,compare} = require('bcryptjs')
-const Dbconnection = require("../databaseMysql");
+const Dbconnection = require("../database");
 
 const RegisterCtrl = async (req, res, next) => {
   const { id, user, password, info } = req.body;

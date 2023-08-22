@@ -1,5 +1,5 @@
 const { query } = require('express')
-const DbConnection = require('../databaseMysql')
+const DbConnection = require('../database')
 
 // get
  const getUser = (req,res) =>{
