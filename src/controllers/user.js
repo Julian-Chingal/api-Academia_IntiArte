@@ -1,23 +1,29 @@
-const { query } = require('express')
-const DbConnection = require('../database')
+const prsima = require("../database");
 
 // get
- const getUser = (req,res) =>{
-    const query = "SELECT PERSON.IDPERSON, CONCAT(PERSON.NAME_PERSON, ' ', PERSON.LASTNAME) AS PERSON_NAME , PERSON.AGE, PERSON.TEL, PERSON.EMAIL FROM PERSON;"
+const getUser = async (req, res) => {
+  const { id } = req.params;
 
-    DbConnection.query(query, (err,rows,field)=>{
-        if(!err){
-            res.json({"person": rows})
-        }else{
-            res.status(500).json('!Error')
-        }
-    })
-   
-}
+  try {
+    const getUsers = await prsima.pERSON.findMany({
+      where: {
+        idperson: parseInt(id),
+      },
+      include: {
+        USER: {
+          select: {
+            username: true,
+          },
+        },
+      },
+    });
+    res.json(getUsers[0]);
+  } catch (error) {
+    res.status(500).json("!Error");
+    console.log(error);
+  }
+};
 
-const createUser = (req,res)=> {
-    
-}
- module.exports = {
-    getUser
- }
+module.exports = {
+  getUser,
+};

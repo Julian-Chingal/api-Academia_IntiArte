@@ -67,7 +67,7 @@ const updateInventory = async (req, res, next) => {
         },
         data: updateData,
       });
-      res.json({ msg: "item updated successfully 🎆 🎇", update });
+      res.json({"item updated successfully 🎆 🎇": update });
     }
   } catch (error) {
     res.status(500).json("!Error");
