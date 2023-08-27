@@ -40,7 +40,7 @@ const createCourse = async (req, res) => {
         description_co: description
       }
     });
-    res.json({"newCourse": newCourse})
+    res.json(newCourse)
   } catch (error) {
     res.status(500).json({ msg: "!Error" });
   }
@@ -58,7 +58,7 @@ const updateCourse = async (req, res) => {
       data: {name_course: name ,
       description_co: description}
     })
-    res.json({"Course updated successfully 🎆 🎇" : updateCourse  });
+    res.json(updateCourse);
    
   } catch (error) {
     console.log(error)
@@ -72,7 +72,7 @@ const deleteCourse = async (req, res) => {
     const deleteCourse = await prisma.cOURSE.delete({where:{
       idcourse: parseInt(id)
     }})
-    res.json({"Course removed": deleteCourse})
+    res.json(deleteCourse)
   } catch (error) {
     res.status(500).json("!Error, Could not delete course");
   }

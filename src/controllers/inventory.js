@@ -5,7 +5,7 @@ const getInventory = async (req, res) => {
   try {
     const items = await prisma.iNVENTORY.findMany();
 
-    res.json({ Inventory: items });
+    res.json(items);
   } catch (error) {
     res.status(500).json({ msg: "Error!" });
   }
@@ -67,7 +67,7 @@ const updateInventory = async (req, res, next) => {
         },
         data: updateData,
       });
-      res.json({"item updated successfully 🎆 🎇": update });
+      res.json(update);
     }
   } catch (error) {
     res.status(500).json("!Error");
@@ -82,7 +82,7 @@ const createInventory = async (req, res) => {
     const newItem = await prisma.iNVENTORY.create({
       data: { item, cant, fk_idcompany: 1 },
     });
-    res.json({ msg: "Item add successfully", newItem });
+    res.json(newItem);
   } catch (error) {
     res.status(500).json({ msg: "!Error" });
     console.log(error);
@@ -96,7 +96,7 @@ const deleteInventory = async (req, res) => {
       where: { idinventory: parseInt(id) },
     });
 
-    res.json({ msg: "item successfully removed ☠️ 💯 ", deleteItem });
+    res.json(deleteItem);
   } catch (error) {
     res.status(404).json({ msg: "Not Foud 😕" });
   }

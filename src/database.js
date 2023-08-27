@@ -6,4 +6,5 @@ if (prisma) {
 }else{ 
     console.log("Conexion Fallida")
 }
+
 module.exports = prisma
